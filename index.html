@@ -1,0 +1,233 @@
+<section id="shop" class="container" aria-labelledby="shop-heading">
+  <h2 id="shop-heading" style="margin-top:18px;">🛍️ Shop — Hakimi Dawakhana</h2>
+
+  <!-- Controls -->
+  <div class="shop-controls" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0;">
+    <div style="flex:1;min-width:220px;">
+      <input id="search" type="search" placeholder="Search products, e.g. 'Oil' or 'Ajwah'..." aria-label="Search products" />
+    </div>
+
+    <div id="categories" aria-hidden="false">
+      <!-- categories buttons will be injected -->
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div id="productsGrid" class="grid products-grid" style="margin-top:12px;"></div>
+
+  <!-- No results -->
+  <p id="noResults" style="display:none;margin-top:12px;color:var(--muted)">No products found.</p>
+</section>
+
+<style>
+  :root{
+    --brand:#2e7d32;
+    --muted:#4b6b4b;
+    --bg:#f5fff5;
+    --card:#fff;
+    --shadow:0 6px 18px rgba(0,0,0,0.08);
+    --radius:12px;
+    --cta:#25D366;
+  }
+
+  /* Controls */
+  #shop .shop-controls input[type="search"]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid #e4e7ea;
+    background: #fff;
+    font-size:15px;
+  }
+
+  #categories button{
+    padding:8px 12px;
+    border-radius:8px;
+    background:#fff;
+    border:1px solid rgba(0,0,0,0.06);
+    margin-right:6px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  #categories button.active{
+    background:var(--brand);
+    color:#fff;
+    border-color:var(--brand);
+  }
+
+  /* Product Grid */
+  .products-grid{
+    display:grid;
+    gap:18px;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  }
+
+  .product{
+    background:var(--card);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    transition:transform .14s ease,box-shadow .14s ease;
+  }
+  .product:hover{ transform:translateY(-6px); box-shadow:0 18px 40px rgba(0,0,0,0.12);}
+
+  .product-media{
+    width:100%;
+    aspect-ratio: 4/3;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg,#f8fff8,#ffffff);
+  }
+  .product-media img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .product-body{
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    flex:1;
+  }
+
+  .product-title{
+    font-size:1rem;
+    font-weight:700;
+    color:#0b2b15;
+    margin:0;
+  }
+
+  .product-meta{ color:var(--muted); font-size:0.95rem; margin:0; }
+
+  .price-row{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+
+  .price{
+    font-weight:900;
+    font-size:1.05rem;
+    background:#fff;
+    padding:6px 8px;
+    border-radius:8px;
+  }
+
+  .btn-buy{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 10px;
+    background:var(--cta);
+    color:#fff;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:700;
+  }
+
+  .badge{
+    display:inline-block;
+    padding:6px 8px;
+    background:rgba(46,125,50,0.08);
+    color:var(--brand);
+    border-radius:8px;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+</style>
+
+<script>
+  const WA_NUMBER = "919454308431";
+
+  const PRODUCTS = [
+    { id:1, name:"Ajwah", price:120, img:"https://i.ibb.co/0RsmfmR0/IMG-20250505-WA0039.jpg", category:"Majun" },
+    { id:2, name:"Nizami Marham", price:55, img:"https://i.ibb.co/RTSgD5nD/IMG-20250505-WA0040.jpg", category:"Ointment" },
+    { id:3, name:"Hakimi Oil", price:120, unit:"100ml", img:"https://i.ibb.co/2rT66cS/IMG-20250505-WA0036.jpg", category:"Oil" },
+    { id:4, name:"Tazgi", price:220, unit:"250g", img:"https://i.ibb.co/pBmM1hNh/IMG-20250505-WA0034.jpg", category:"Powder" },
+    { id:5, name:"Himkat Oil", price:130, unit:"100ml", img:"https://i.ibb.co/7d4GjS6v/IMG-20250505-WA0035.jpg", category:"Oil" },
+    { id:6, name:"Pyame Sehat", price:130, unit:"200ml", img:"https://i.ibb.co/PZ4B0w45/IMG-20250505-WA0032.jpg", category:"Syrup" },
+    { id:7, name:"Shifalo Tab", price:350, unit:"10×10", img:"https://i.ibb.co/DHDRccv8/IMG-20250505-WA0033.jpg", category:"Tablets" },
+    { id:8, name:"Oziya Powder", price:150, img:"https://i.ibb.co/Q7wHtFX9/IMG-20250505-WA0031.jpg", category:"Powder" },
+    { id:9, name:"Nizam Afza", price:90, unit:"100ml", img:"https://i.ibb.co/1GhLpHky/IMG-20250505-WA0029.jpg", category:"Syrup" },
+    { id:10, name:"Generic", price:140, unit:"200ml", img:"https://i.ibb.co/ks3bC0cS/IMG-20250505-WA0026.jpg", category:"Oil" },
+    { id:11, name:"Habbe Musaffi Khoon", price:150, unit:"20×10", img:"https://i.ibb.co/20yRrYBv/IMG-20250505-WA0027.jpg", category:"Tablets" },
+    { id:12, name:"Quwati Khash", price:280, unit:"125g", img:"https://i.ibb.co/Df0WR0n3/IMG-20250505-WA0028.jpg", category:"Powder" },
+    { id:13, name:"Rahate Jigar", price:120, unit:"200ml", img:"https://i.ibb.co/671SvQ5M/IMG-20250505-WA0025.jpg", category:"Syrup" },
+    { id:14, name:"Oeba Joshanda", price:350, img:"https://i.ibb.co/W4BTMFGW/IMG-20250505-WA0024.jpg", category:"Powder" },
+    { id:15, name:"Habbe Suranjan", price:150, unit:"20×10", img:"https://i.ibb.co/6MJqpST/IMG-20250505-WA0022.jpg", category:"Tablets" },
+    { id:16, name:"Enza Tablet", price:250, unit:"10×10", img:"https://i.ibb.co/HLpZQ018/IMG-20250505-WA0019.jpg", category:"Tablets" },
+    { id:17, name:"Shabab-e-Azam", price:550, img:"https://i.ibb.co/nMh04nYF/IMG-20250505-WA0017.jpg", category:"Majun" },
+    { id:18, name:"Josh Awar Khas", price:500, img:"https://i.ibb.co/xtTZSm8Z/IMG-20250505-WA0018.jpg", category:"Majun" },
+    { id:19, name:"Majun Suranjan", price:150, img:"https://i.ibb.co/PZDyfg3Q/IMG-20250505-WA0012.jpg", category:"Majun" },
+    { id:20, name:"Mumsik Benazir", price:100, img:"https://i.ibb.co/6c9j8gcX/IMG-20250505-WA0010.jpg", category:"Oil" }
+  ];
+
+  const grid = document.getElementById('productsGrid');
+  const catDiv = document.getElementById('categories');
+  const searchInput = document.getElementById('search');
+  const noResults = document.getElementById('noResults');
+
+  const categories = ["All", ...new Set(PRODUCTS.map(p => p.category))];
+
+  function renderCategories() {
+    categories.forEach(cat => {
+      const b = document.createElement("button");
+      b.textContent = cat;
+      if (cat === "All") b.classList.add("active");
+      b.onclick = () => {
+        document.querySelectorAll("#categories button").forEach(btn => btn.classList.remove("active"));
+        b.classList.add("active");
+        renderProducts(cat, searchInput.value);
+      };
+      catDiv.append(b);
+    });
+  }
+
+  function renderProducts(category = "All", search = "") {
+    grid.innerHTML = "";
+    search = search.toLowerCase();
+
+    const filtered = PRODUCTS.filter(p =>
+      (category === "All" || p.category === category) &&
+      (p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search))
+    );
+
+    if (filtered.length === 0) {
+      noResults.style.display = "block";
+      return;
+    }
+
+    noResults.style.display = "none";
+
+    filtered.forEach(p => {
+      grid.innerHTML += `
+        <article class="product">
+          <div class="product-media">
+            <img src="${p.img}" alt="${p.name}">
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">${p.name}</h3>
+            <p class="product-meta">${p.category} ${p.unit ? "(" + p.unit + ")" : ""}</p>
+            <div class="price-row">
+              <div class="price">₹${p.price}</div>
+              <a href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('I want to buy ' + p.name + ' (₹' + p.price + ')')}"
+                 target="_blank" class="btn-buy">Buy • WhatsApp</a>
+            </div>
+          </div>
+        </article>
+      `;
+    });
+  }
+
+  searchInput.oninput = () => {
+    renderProducts(document.querySelector("#categories button.active").textContent, searchInput.value);
+  };
+
+  renderCategories();
+  renderProducts();
+</script>p
