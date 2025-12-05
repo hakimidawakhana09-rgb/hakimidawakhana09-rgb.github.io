@@ -30,21 +30,10 @@
     <span style="font-size:50px; color:#e26c20; margin-top:-5px;">
       DAWAKHANA
     </span>
+<h2 id="shop-heading" class="title-center" style="margin-top:18px;">
+  🛒 Shop ~ Hakimi Dawakhana
+</h2>
 
-  </div>
-
-</div>
-  <span style="font-size:40px; color:#0b442d;">HAKIMI</span>
-  <span style="font-size:40px; color:#e26c20;">DAWAKHANA</span>
-  <span style="font-size:18px; color:#0b442d; letter-spacing:1px;">
-    UNANI • HERBAL • CLINIC
-  </span>
-</div>
-<h1 class="center-title">
-  HAKIMI <span>DAWAKHANA</span>
-  <small>UNANI • HERBAL • CLINIC</small>
-</h1>
-<h2 id="shop-heading" style="margin-top:18px;">🛍️ Shop — Hakimi Dawakhana</h2>
 <!-- Controls -->
   <div class="shop-controls" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0;">
     <div style="flex:1;min-width:220px;">
@@ -72,7 +61,34 @@
     --radius:12px;
     --cta:#25D366;
   }
+/* Default (Mobile view) */
+.center-title {
+  text-align: left;
+  margin: 10px 0 20px;
+  font-weight: 900;
+  font-size: 26px;
+}
 
+.center-title span {
+  color: #e26c20;
+}
+
+.center-title small {
+  display: block;
+  font-size: 14px;
+  margin-top: 4px;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+/* Desktop View – center heading */
+@media (min-width: 768px) {
+  .center-title {
+    text-align: center;
+    font-size: 34px;
+    margin-top: 20px;
+  }
+}
   /* Controls */
   #shop .shop-controls input[type="search"]{
     width:100%;
