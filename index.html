@@ -295,6 +295,39 @@
   }
   </style>
 <script>
+function filterBrand(brandName) {
+  grid.innerHTML = "";
+
+  let filtered = PRODUCTS.filter(p => p.brand === brandName);
+
+  if (filtered.length === 0) {
+    noResults.style.display = "block";
+    return;
+  }
+
+  noResults.style.display = "none";
+
+  filtered.forEach(p => {
+    grid.innerHTML += `
+      <article class="product">
+        <div class="product-media">
+          <img src="${p.img}">
+        </div>
+        <div class="product-body">
+          <h3 class="product-title">${p.name}</h3>
+          <p class="product-meta">${p.category} ${p.unit ? "(" + p.unit + ")" : ""}</p>
+          <div class="price-row">
+            <div class="price">₹${p.price}</div>
+            <a class="btn-buy" href="https://wa.me/${WA_NUMBER}?text=Buy ${p.name}">
+              Buy on WhatsApp
+            </a>
+          </div>
+        </div>
+      </article>
+    `;
+  });
+}
+</script>
   const WA_NUMBER = "919454308431";
 
   const PRODUCTS = [
