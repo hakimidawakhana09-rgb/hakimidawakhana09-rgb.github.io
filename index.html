@@ -76,7 +76,14 @@
   <!-- No results -->
   <p id="noResults" style="display:none;margin-top:12px;color:var(--muted)">No products found.</p>
 </section>
+<script>
+  const track = document.querySelector('.brand-track');
+  const logos = track.innerHTML;
 
+  // Duplicate logos for infinite sliding
+  track.innerHTML += logos;
+</script>
+    
 <style>
   :root{
     --brand:#2e7d32;
