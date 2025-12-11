@@ -433,5 +433,96 @@ function placeOrder(){
     const price = prod.units[buying.unit] || 0;
     msg += `%0A• ${prod.name} (${buying.unit}) x1 — ₹${price}`;
     msg += `%0A%0ATotal: ₹${price}`;
-  } else {
-    return alert("No produ
+} else {
+    return alert("No product selected.");
+  }
+
+  msg += `%0A%0A*Customer:*%0AName: ${name || '-'}%0APhone: ${phone || '-'}%0APIN: ${pin}%0AAddress: ${address}%0ALandmark: ${landmark || '-'}%0A`;
+  msg += `%0APayment: ${pay}%0A%0A-- Sent from website`;
+
+  // WhatsApp link
+  const wa = `https://wa.me/${STORE_WA}?text=${encodeURIComponent(decodeURIComponent(msg))}`;
+  window.open(wa, '_blank');
+
+  // If order placed from cart → empty cart
+  if(buying && buying.fromCart) cart = [];
+  updateCartUI();
+
+  // Close modal
+  modalWrap.style.display = 'none';
+}
+
+/* ---------- SEARCH ---------- */
+searchInput.addEventListener('input', ()=> {
+  const activeCat = document.querySelector('#categories button.active')?.textContent || 'All';
+  renderProducts(activeCat, searchInput.value);
+});
+
+/* ---------- BRAND FILTER ---------- */
+function filterBrand(brand){
+  document.querySelectorAll('#categories button').forEach(x=>x.classList.remove('active'));
+  renderProducts('All', ''); 
+
+  grid.innerHTML = '';
+  const filtered = PRODUCTS.filter(p=>p.brand && p.brand.toLowerCase()===brand.toLowerCase());
+
+  if(filtered.length===0){
+    noResults.style.display='block';
+    return;
+  }
+
+  noResults.style.display='none';
+
+  filtered.forEach(p=> {
+    const units = Object.keys(p.units || {});
+    const defaultUnit = units[0] || "";
+    const defaultPrice = p.units[defaultUnit] || 0;
+
+    const card = document.createElement('div');
+    card.className = 'product';
+    card.innerHTML = `
+      <div class="media"><img src="${p.img}" alt="${p.name}"></div>
+      <div class="pbody">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h4>${p.name}</h4>
+          <div class="meta">${p.brand}</div>
+        </div>
+        <div class="meta">${p.category}</div>
+
+        <div class="unit-row">
+          <select class="select-unit" data-id="${p.id}">
+            ${units.map(u=>`<option value="${u}">${u}</option>`).join('')}
+          </select>
+          <div style="margin-left:auto;font-weight:900" class="price">₹<span class="price-val">${defaultPrice}</span></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-buy" data-buy="${p.id}">Buy Now</button>
+          <button class="btn btn-cart" data-cart="${p.id}">Add to Cart</button>
+          <div class="id-small">ID: ${p.id}</div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    const select = card.querySelector('.select-unit');
+    const priceVal = card.querySelector('.price-val');
+
+    select.addEventListener('change', ()=>{
+      const unit = select.value;
+      priceVal.textContent = p.units[unit] || 0;
+    });
+
+    card.querySelector('[data-cart]').addEventListener('click', ()=>{
+      addToCart(p.id, select.value || defaultUnit);
+    });
+
+    card.querySelector('[data-buy]').addEventListener('click', ()=>{
+      openBuy(p.id, select.value || defaultUnit);
+    });
+  });
+}
+
+/* ---------- INITIALIZE ---------- */
+renderCategories();
+renderProducts();
