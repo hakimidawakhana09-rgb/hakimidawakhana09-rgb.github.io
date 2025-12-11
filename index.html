@@ -507,25 +507,6 @@ function renderCartPanel(){
     `;
     cartItemsWrap.appendChild(node);
   });
-  // attach qty buttons
-  cartItemsWrap.querySelectorAll('.inc').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const id = +b.dataset.id; const unit = b.dataset.unit;
-      const existing = cart.find(i=>i.id===id && i.unit===unit);
-      if(existing){ existing.qty+=1; updateCartUI(); }
-    });
-  
-  cartItemsWrap.querySelectorAll('.dec').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const id = +b.dataset.id; const unit = b.dataset.unit;
-      const idx = cart.findIndex(i=>i.id===id && i.unit===unit);
-      if(idx>-1){
-        cart[idx].qty -=1;
-        if(cart[idx].qty<=0) cart.splice(idx,1);
-        updateCartUI();
-      }
-    });
-}
 
 /* view cart & checkout handlers */
 document.getElementById('openCartTop').addEventListener('click', ()=> {
@@ -546,7 +527,37 @@ document.getElementById('checkoutBtnBottom').addEventListener('click', ()=> {
 /* ---------- BUY FLOW (modal) ---------- */
 let buying = null; // {id, unit, fromCart}
 function openBuy(productId, unit){
-  const prod = PRODUCTS.find(x=>x.id===productId);
+  const prod = PR// attach qty buttons
+cartItemsWrap.querySelectorAll('.inc').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const id = +b.dataset.id; 
+    const unit = b.dataset.unit;
+    const existing = cart.find(i=>i.id===id && i.unit===unit);
+    if(existing){ 
+      existing.qty += 1; 
+      updateCartUI(); 
+    }
+  });
+});
+
+cartItemsWrap.querySelectorAll('.dec').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const id = +b.dataset.id; 
+    const unit = b.dataset.unit;
+
+    const idx = cart.findIndex(i=>i.id===id && i.unit===unit);
+
+    if(idx > -1){
+      cart[idx].qty -= 1;
+      if(cart[idx].qty <= 0){
+        cart.splice(idx,1);
+      }
+      updateCartUI();
+    }
+  });
+});
+}
+  ODUCTS.find(x=>x.id===productId);
   if(!prod) return;
   buying = { id: productId, unit, fromCart:false };
   document.getElementById('modalProductLine').textContent = `${prod.name} — ${unit} — ₹${prod.units[unit]}`;
