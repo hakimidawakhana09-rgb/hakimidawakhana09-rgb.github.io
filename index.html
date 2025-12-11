@@ -450,7 +450,6 @@ function renderProducts(category="All", search="", brandFilter=""){
     card.querySelector('[data-buy]').addEventListener('click', ()=>{
       openBuy(p.id, select.value || defaultUnit);
     });
-  });
 }
 
 /* ---------- CART LOGIC ---------- */
@@ -515,7 +514,7 @@ function renderCartPanel(){
       const existing = cart.find(i=>i.id===id && i.unit===unit);
       if(existing){ existing.qty+=1; updateCartUI(); }
     });
-  });
+  
   cartItemsWrap.querySelectorAll('.dec').forEach(b=>{
     b.addEventListener('click', ()=>{
       const id = +b.dataset.id; const unit = b.dataset.unit;
@@ -526,7 +525,6 @@ function renderCartPanel(){
         updateCartUI();
       }
     });
-  });
 }
 
 /* view cart & checkout handlers */
