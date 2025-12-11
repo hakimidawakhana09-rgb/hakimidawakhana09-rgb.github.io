@@ -68,7 +68,16 @@
 
   <!-- Product Grid -->
   <div id="productsGrid" class="grid products-grid" style="margin-top:12px;"></div>
+<!-- HELP CENTRE BUTTON -->
+<div id="helpCentre">
+  <img src="https://i.ibb.co/zJFgbbk/help-icon-40.png" id="helpIcon">
+  <div id="helpText">Help Centre</div>
 
+  <div id="helpMenu">
+    <a href="https://wa.me/917398614905" target="_blank">📞 Enquiry (Call/WhatsApp)</a>
+    <a href="https://wa.me/918114068969" target="_blank">👨‍⚕️ Dr. Contact</a>
+  </div>
+</div>
   <!-- No results -->
   <p id="noResults" style="display:none;margin-top:12px;color:var(--muted)">No products found.</p>
 </section>
@@ -151,7 +160,56 @@
     gap:18px;
     grid-template-columns:repeat(4, 1fr);
   }
+#helpCentre {
+  position: fixed;
+  right: 20px;
+  bottom: 200px;   /* आपकी रिक्वेस्ट */
+  z-index: 9999;
+  text-align: center;
+}
 
+#helpIcon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #0b5d28;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+#helpText {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b5d28;
+}
+
+#helpMenu {
+  display: none;
+  background: #fff;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+#helpMenu a {
+  display: block;
+  padding: 6px 10px;
+  text-decoration: none;
+  color: #0b5d28;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+#helpMenu a:hover {
+  background: #e9ffe9;
+}
+
+#helpCentre:hover #helpMenu {
+  display: block;
+}
   .product{
     background:var(--card);
     border-radius:var(--radius);
