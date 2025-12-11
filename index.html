@@ -94,8 +94,7 @@
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
+  <!-- HEADER -->
 <header>
   <div class="header-inner">
     <div class="brand-left">
@@ -166,7 +165,6 @@
     <a href="https://wa.me/918114068969" target="_blank">👨‍⚕️ Dr. Contact</a>
   </div>
 </div>
-
 <!-- buy modal (hidden) -->
 <div id="modalWrap" style="display:none">
   <div class="overlay">
@@ -246,8 +244,7 @@ const PRODUCTS = [
   }
   // add more...
 ];
-
-/* ---------- STATE ---------- */
+  /* ---------- STATE ---------- */
 let cart = []; // entries: { id, unit, price, qty }
 const grid = document.getElementById('productsGrid');
 const catDiv = document.getElementById('categories');
@@ -334,8 +331,7 @@ function renderProducts(category="All", search=""){
       const unit = select.value;
       priceVal.textContent = p.units[unit] || 0;
     });
-
-    card.querySelector('[data-cart]').addEventListener('click', ()=>{
+  card.querySelector('[data-cart]').addEventListener('click', ()=>{
       addToCart(p.id, select.value || defaultUnit);
     });
 
@@ -433,22 +429,18 @@ function placeOrder(){
     const price = prod.units[buying.unit] || 0;
     msg += `%0A• ${prod.name} (${buying.unit}) x1 — ₹${price}`;
     msg += `%0A%0ATotal: ₹${price}`;
-} else {
+  } else {
     return alert("No product selected.");
   }
 
-  msg += `%0A%0A*Customer:*%0AName: ${name || '-'}%0APhone: ${phone || '-'}%0APIN: ${pin}%0AAddress: ${address}%0ALandmark: ${landmark || '-'}%0A`;
+  msg += `%0A%0ACustomer:%0AName: ${name || '-'}%0APhone: ${phone || '-'}%0APIN: ${pin}%0AAddress: ${address}%0ALandmark: ${landmark || '-'}%0A`;
   msg += `%0APayment: ${pay}%0A%0A-- Sent from website`;
 
-  // WhatsApp link
   const wa = `https://wa.me/${STORE_WA}?text=${encodeURIComponent(decodeURIComponent(msg))}`;
   window.open(wa, '_blank');
 
-  // If order placed from cart → empty cart
   if(buying && buying.fromCart) cart = [];
   updateCartUI();
-
-  // Close modal
   modalWrap.style.display = 'none';
 }
 
@@ -457,27 +449,18 @@ searchInput.addEventListener('input', ()=> {
   const activeCat = document.querySelector('#categories button.active')?.textContent || 'All';
   renderProducts(activeCat, searchInput.value);
 });
-
-/* ---------- BRAND FILTER ---------- */
+  /* ---------- BRAND FILTER (when logo clicked) ---------- */
 function filterBrand(brand){
   document.querySelectorAll('#categories button').forEach(x=>x.classList.remove('active'));
-  renderProducts('All', ''); 
-
   grid.innerHTML = '';
   const filtered = PRODUCTS.filter(p=>p.brand && p.brand.toLowerCase()===brand.toLowerCase());
-
-  if(filtered.length===0){
-    noResults.style.display='block';
-    return;
-  }
-
+  if(filtered.length===0){ noResults.style.display='block'; return; }
   noResults.style.display='none';
-
-  filtered.forEach(p=> {
+  filtered.forEach(p=>{
+    // small reuse of render for each product (same markup as renderProducts)
     const units = Object.keys(p.units || {});
     const defaultUnit = units[0] || "";
     const defaultPrice = p.units[defaultUnit] || 0;
-
     const card = document.createElement('div');
     card.className = 'product';
     card.innerHTML = `
@@ -504,25 +487,28 @@ function filterBrand(brand){
       </div>
     `;
     grid.appendChild(card);
-
     const select = card.querySelector('.select-unit');
     const priceVal = card.querySelector('.price-val');
-
-    select.addEventListener('change', ()=>{
-      const unit = select.value;
-      priceVal.textContent = p.units[unit] || 0;
-    });
-
-    card.querySelector('[data-cart]').addEventListener('click', ()=>{
-      addToCart(p.id, select.value || defaultUnit);
-    });
-
-    card.querySelector('[data-buy]').addEventListener('click', ()=>{
-      openBuy(p.id, select.value || defaultUnit);
-    });
+    select.addEventListener('change', ()=> priceVal.textContent = p.units[select.value] || 0);
+    card.querySelector('[data-cart]').addEventListener('click', ()=> addToCart(p.id, select.value || defaultUnit));
+    card.querySelector('[data-buy]').addEventListener('click', ()=> openBuy(p.id, select.value || defaultUnit));
   });
 }
 
-/* ---------- INITIALIZE ---------- */
+/* ---------- INITIAL ---------- */
 renderCategories();
 renderProducts();
+updateCartUI();
+
+/* ---------- top add-to-cart button open cart action ---------- */
+document.getElementById('openCartTop').addEventListener('click', ()=> {
+  if(cart.length===0) return alert("Cart empty");
+  const lines = cart.map(i=> `${i.name} (${i.unit}) x${i.qty} — ₹${i.price*i.qty}`).join('\n');
+  const total = cart.reduce((s,i)=>s + i.price*i.qty, 0);
+  if(confirm(`Cart:\n\n${lines}\n\nTotal: ₹${total}\n\nProceed to checkout?`)){
+    openBuyFromCart();
+  }
+});
+</script>
+</body>
+</html>
