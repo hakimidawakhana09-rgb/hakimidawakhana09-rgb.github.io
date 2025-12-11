@@ -4,11 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Hakimi Dawakhana — Demo Shop</title>
+<meta name="description" content="Hakimi Dawakhana - Unani & Ayurvedic shop demo" />
 <style>
   /* ---------- RESET / BASIC ---------- */
   *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
   body{margin:0;background:#f5f7fb;color:#111}
   a{color:inherit}
+  button{font-family:inherit}
 
   /* ---------- HEADER / SEARCH ---------- */
   header{background:#fff;padding:12px 16px;box-shadow:0 6px 18px rgba(15,23,42,0.06);position:sticky;top:0;z-index:60}
@@ -30,16 +32,19 @@
 
   /* ---------- MAIN LAYOUT ---------- */
   .container{max-width:1100px;margin:18px auto;padding:0 16px}
+  #topControls{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .filters select{padding:8px;border-radius:8px;border:1px solid #e6e9ef;background:#fff}
   #categories{margin:8px 0 16px;display:flex;gap:8px;flex-wrap:wrap}
   #categories button{padding:8px 12px;border-radius:999px;border:1px solid #e6e9ef;background:#fff;cursor:pointer}
   #categories button.active{background:#0b5d28;color:#fff;border-color:#0b5d28}
 
-  .products-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+  .products-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 
   /* ---------- PRODUCT CARD ---------- */
   .product{background:#fff;border-radius:12px;padding:12px;box-shadow:0 10px 24px rgba(11,45,77,0.04);display:flex;flex-direction:column;min-height:320px}
   .media{height:160px;background:linear-gradient(180deg,#f8fbff,#fff);display:flex;align-items:center;justify-content:center;border-radius:8px;overflow:hidden}
-  .media img{max-height:140px;max-width:100%;object-fit:contain}
+  .media img{max-height:140px;max-width:100%;object-fit:contain;cursor:pointer}
   .pbody{padding-top:10px;display:flex;flex-direction:column;gap:8px;flex:1}
   h4{margin:0;font-size:16px;color:#0b3a66}
   .meta{color:#6b7280;font-size:13px}
@@ -50,8 +55,16 @@
   .btn{padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
   .btn-buy{background:#ff6f00;color:#fff}
   .btn-cart{background:#0b5d96;color:#fff}
-
   .id-small{font-size:12px;color:#9aa3b2;margin-left:auto}
+  .rating {color:#f59e0b;font-weight:800; font-size:13px}
+
+  /* ---------- CART PANEL ---------- */
+  #cartPanel{position:fixed;right:18px;top:100px;width:320px;max-height:70vh;background:#fff;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.18);overflow:auto;padding:12px;z-index:120;display:none}
+  #cartPanel h4{margin:0 0 8px 0}
+  .cart-item{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;border:1px solid #eef3fb;margin-bottom:8px}
+  .cart-item img{height:48px;width:48px;object-fit:contain;border-radius:8px}
+  .qty-controls{display:flex;gap:6px;align-items:center}
+  .qty-controls button{padding:6px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer}
 
   /* ---------- STICKY BOTTOM CART BAR (150px height banner area) ---------- */
   .bottom-banner{position:fixed;left:0;right:0;bottom:0;height:150px;background:#fff;border-top:1px solid #e8eef8;display:flex;align-items:center;justify-content:center;padding:12px;z-index:90;box-shadow:0 -8px 30px rgba(11,45,77,0.06)}
@@ -63,23 +76,32 @@
   .btn-checkout{background:#ff6f00;color:#fff;padding:10px 14px;border-radius:8px;border:0}
 
   /* ---------- HELP FLOAT ---------- */
-  #helpCentre{position:fixed;right:18px;bottom:200px;z-index:999;display:flex;flex-direction:column;align-items:center;gap:8px}
-  #helpIcon{width:56px;height:56px;border-radius:12px;background:#0b5d28;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 12px 30px rgba(11,45,77,0.15)}
+  #helpCentre{position:fixed;right:18px;bottom:100px;z-index:999;display:flex;flex-direction:column;align-items:center;gap:8px}
+  #helpBtn{width:64px;height:64px;border-radius:12px;background:#0b5d28;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 12px 30px rgba(11,45,77,0.15)}
   #helpText{font-size:13px;background:rgba(11,93,150,0.08);padding:6px 10px;border-radius:8px;color:#0b5d28}
   #helpMenu{display:none;margin-top:6px;background:#fff;border-radius:10px;box-shadow:0 12px 30px rgba(11,45,77,0.12);overflow:hidden}
   #helpMenu a{display:block;padding:10px 14px;text-decoration:none;color:#0b3a66;border-bottom:1px solid #eef3fb}
-  #helpMenu a:last-child{border-bottom:0}
-  #helpCentre:hover #helpMenu{display:block;transform:translateY(-6px)}
+  #helpCentre.show #helpMenu{display:block}
+
+  /* ---------- IMAGE LIGHTBOX ---------- */
+  #lightbox{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:200}
+  #lightbox img{max-width:92%;max-height:86%;border-radius:8px}
 
   /* ---------- MODAL ---------- */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:1000}
   .modal{width:420px;background:#fff;padding:16px;border-radius:10px;box-shadow:0 20px 60px rgba(11,45,77,0.18)}
   .modal h3{margin:0 0 8px}
-  .form-row{display:flex;gap:8px;flex-wrap:wrap}
   input[type="text"], input[type="tel"], textarea, select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef}
   textarea{resize:vertical}
   .pay-options{display:flex;gap:8px;margin-top:8px}
   .pay-options label{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;border:1px solid #e6e9ef;cursor:pointer}
+
+  /* ---------- FOOTER ---------- */
+  footer{margin-top:40px;background:#fff;padding:18px;border-top:1px solid #eef3fb}
+  .footer-inner{max-width:1200px;margin:0 auto;display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between}
+  .owner{min-width:220px}
+  .socials img{height:28px;margin-right:8px;cursor:pointer}
+  .small-muted{color:#6b7280;font-size:13px}
 
   /* ---------- RESPONSIVE ---------- */
   @media(max-width:760px){
@@ -89,7 +111,8 @@
     .brand-track img{height:48px}
     .modal{width:94%}
     .bottom-banner{height:120px}
-    #helpIcon{width:52px;height:52px}
+    #helpBtn{width:52px;height:52px}
+    #cartPanel{right:10px;width:92%}
   }
 </style>
 </head>
@@ -107,8 +130,12 @@
 
     <div class="controls">
       <!-- Add to Cart top (user requested before search) -->
-      <button id="openCartTop" class="btn-cart-top">🛒 Add to Cart (<span id="cartTopCount">0</span>)</button>
+      <button id="openCartTop" class="btn-cart-top">🛒 Cart (<span id="cartTopCount">0</span>)</button>
       <input id="search" type="search" placeholder="Search products, e.g. Oil, Syrup..." />
+      <div id="filterBrandWrap" style="display:flex;align-items:center;gap:6px">
+        <select id="filterBrand"><option value="">All brands</option></select>
+        <select id="filterCategory"><option value="">All categories</option></select>
+      </div>
     </div>
   </div>
 </header>
@@ -116,31 +143,55 @@
 <!-- brand slider -->
 <div class="brand-slider">
   <div class="brand-track" id="brandTrack">
-    <img src="https://i.imghippo.com/files/DFIU3752POk.jpg" alt="Hamdard" onclick="filterBrand('hamdard')">
-    <img src="https://i.imghippo.com/files/VbrZ2044JI.png" alt="Oeba" onclick="filterBrand('oeba')">
-    <img src="https://i.imghippo.com/files/cBH7059Gcc.jpg" alt="Rex" onclick="filterBrand('rex')">
-    <img src="https://i.imghippo.com/files/YF5480Ag.png" alt="Tibbiya" onclick="filterBrand('tibbiya')">
-    <img src="https://i.imghippo.com/files/ZloP5326X.png" alt="Shama" onclick="filterBrand('shama')">
-    <img src="https://i.imghippo.com/files/jeQ1539IeI.jpg" alt="Cure" onclick="filterBrand('cure')">
-    <img src="https://i.imghippo.com/files/rEdE6971qsQ.png" alt="Dabur" onclick="filterBrand('dabur')">
-    <img src="https://i.imghippo.com/files/nhy7967rgc.jpg" alt="Ambic" onclick="filterBrand('ambic')">
-    <img src="https://i.imghippo.com/files/HnjF6152Ydk.jpg" alt="Dehlvi" onclick="filterBrand('dehlvi')">
-    <img src="https://i.imghippo.com/files/Vw1434AQU.jpg" alt="Baidyanath" onclick="filterBrand('baidyanath')">
+    <img src="https://i.imghippo.com/files/DFIU3752POk.jpg" alt="Hamdard" data-brand="hamdard">
+    <img src="https://i.imghippo.com/files/VbrZ2044JI.png" alt="Oeba" data-brand="oeba">
+    <img src="https://i.imghippo.com/files/cBH7059Gcc.jpg" alt="Rex" data-brand="rex">
+    <img src="https://i.imghippo.com/files/YF5480Ag.png" alt="Tibbiya" data-brand="tibbiya">
+    <img src="https://i.imghippo.com/files/ZloP5326X.png" alt="Shama" data-brand="shama">
+    <img src="https://i.imghippo.com/files/jeQ1539IeI.jpg" alt="Cure" data-brand="cure">
+    <img src="https://i.imghippo.com/files/rEdE6971qsQ.png" alt="Dabur" data-brand="dabur">
+    <img src="https://i.imghippo.com/files/nhy7967rgc.jpg" alt="Ambic" data-brand="ambic">
+    <img src="https://i.imghippo.com/files/HnjF6152Ydk.jpg" alt="Dehlvi" data-brand="dehlvi">
+    <img src="https://i.imghippo.com/files/Vw1434AQU.jpg" alt="Baidyanath" data-brand="baidyanath">
   </div>
 </div>
 
 <!-- main -->
 <main class="container">
+  <div id="topControls">
+    <div class="filters">
+      <div style="font-weight:700;color:#0b5d28">Free delivery on orders ₹<span id="freeThresholdText">1000</span>+</div>
+    </div>
+  </div>
+
   <div id="categories"></div>
   <div id="productsGrid" class="products-grid"></div>
   <p id="noResults" style="display:none;color:#666;margin-top:12px">No products found.</p>
 </main>
 
+<!-- cart panel (right) -->
+<div id="cartPanel" aria-hidden="true">
+  <h4>Your Cart</h4>
+  <div id="cartItems"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+    <div>
+      <div style="font-weight:800" id="cartSubtotalText">Subtotal: ₹0</div>
+      <div class="small-muted" id="cartShippingText">Shipping: ₹0</div>
+    </div>
+    <div style="text-align:right">
+      <div class="cart-count" id="cartCount">0</div>
+      <div style="margin-top:6px">
+        <button id="cartCheckoutBtn" class="btn-checkout">Buy Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- bottom banner (sticky) -->
 <div class="bottom-banner" id="bottomBanner" aria-hidden="true" style="display:none">
   <div class="banner-inner">
     <div class="cart-summary">
-      <div class="cart-count" id="cartCount">0</div>
+      <div class="cart-count" id="cartCountBottom">0</div>
       <div>
         <div style="font-weight:800" id="cartItemsText">0 items</div>
         <div style="color:#6b7280" id="cartTotalText">Total ₹0</div>
@@ -149,24 +200,25 @@
 
     <div class="banner-actions">
       <button class="btn-view" id="viewCartBtn">View Cart</button>
-      <button class="btn-checkout" id="checkoutBtn">Checkout</button>
+      <button class="btn-checkout" id="checkoutBtnBottom">Buy Now</button>
     </div>
   </div>
 </div>
 
 <!-- HELP CENTRE BUTTON -->
-<div id="helpCentre">
-  <div id="helpBtn">
-    <img src="https://i.ibb.co/W4xVX1QH/images-2.png" id="helpIcon">
+<div id="helpCentre" title="Help centre">
+  <div id="helpBtn" role="button" aria-label="Help centre">?
   </div>
-
   <div id="helpText">Help Centre</div>
-
   <div id="helpMenu">
-    <a href="https://wa.me/917398614905" target="_blank">📞 Enquiry (Call/WhatsApp)</a>
-    <a href="https://wa.me/918114068969" target="_blank">👨‍⚕️ Dr. Contact</a>
+    <a href="#" id="helpEnquiry">📞 Enquiry (Call/WhatsApp)</a>
+    <a href="#" id="helpDoctor">👨‍⚕️ Dr. Contact</a>
   </div>
 </div>
+
+<!-- lightbox -->
+<div id="lightbox"><img src="" alt="product large"></div>
+
 <!-- buy modal (hidden) -->
 <div id="modalWrap" style="display:none">
   <div class="overlay">
@@ -199,6 +251,10 @@
           <label><input type="radio" name="pay" value="COD" checked> COD</label>
           <label><input type="radio" name="pay" value="Online"> Online (UPI)</label>
         </div>
+        <div id="qrWrap" style="margin-top:8px;display:none">
+          <div style="font-size:13px;color:#6b7280;margin-bottom:6px">Scan to Pay</div>
+          <img id="qrImage" src="" alt="QR" style="width:140px;height:140px;object-fit:contain">
+        </div>
       </div>
 
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
@@ -209,54 +265,91 @@
   </div>
 </div>
 
+<!-- footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="owner">
+      <div style="font-weight:800">Owner</div>
+      <div style="margin-top:6px">Name: <strong>Mohammad Uzair</strong></div>
+      <div>WhatsApp: <a href="https://wa.me/919454308431" target="_blank">+91 9454308431</a></div>
+      <div>Instagram: <a href="#" id="ownerInsta">@your_instagram</a></div>
+    </div>
+
+    <div>
+      <div style="font-weight:800">Connect</div>
+      <div style="margin-top:6px" class="socials">
+        <a href="https://wa.me/917398614905" target="_blank"><img src="https://i.ibb.co/4WfQFvL/whatsapp-32.png" alt="wa"></a>
+        <a href="#" target="_blank"><img src="https://i.ibb.co/5Gq3J2W/instagram-32.png" alt="insta"></a>
+        <a href="#" target="_blank"><img src="https://i.ibb.co/9r6wTqJ/facebook-32.png" alt="fb"></a>
+        <a href="https://maps.app.goo.gl/qU9DTrYuDQcUHF8c7" target="_blank"><img src="https://i.ibb.co/M1h9nK2/map-32.png" alt="map"></a>
+      </div>
+    </div>
+
+    <div style="min-width:220px">
+      <div style="font-weight:800">Contact Store</div>
+      <div style="margin-top:6px">Orders / WhatsApp: <a href="https://wa.me/917398614905" target="_blank">+91 7398614905</a></div>
+      <div>Dr (contact): <a href="https://wa.me/918114068969" target="_blank">+91 8114068969</a></div>
+    </div>
+  </div>
+</footer>
+
 <script>
 /* ---------- CONFIG ---------- */
-const STORE_WA = "919454308431"; // store WhatsApp (order receiver)
-const ENQUIRY_WA = "917398614905"; // enquiry (user previously used 7398614905 — keep 739? user gave many; using provided earlier 7398614905)
+const ORDER_WA = "917398614905"; // buy now -> send message here (user requested 7398614905)
+const ENQUIRY_WA = "917398614905";
 const DOCTOR_WA = "918114068969";
 
-/* ---------- PRODUCTS (example data) ----------
-Each product has units: object with unitName:price
-Add or edit products here as needed.
+const FREE_DELIVERY_THRESHOLD = 1000; // ₹1000 free
+const SHIPPING_FEE = 40;
+
+/* ---------- PRODUCTS (22 sample items) ----------
+You can edit / extend this list. Each product must have `units` object: unitName: price
 */
 const PRODUCTS = [
-  { id:1, name:"Ajwah", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/0RsmfmR0/IMG-20250505-WA0039.jpg",
-    units: {"100ml":120, "200ml":220, "500ml":500}
-  },
-  { id:2, name:"Nizami Marham", brand:"oeba", category:"Ointment", img:"https://i.ibb.co/RTSgD5nD/IMG-20250505-WA0040.jpg",
-    units: {"single":55}
-  },
-  { id:3, name:"Hakimi Tel", brand:"oeba", category:"Oil", img:"https://i.ibb.co/2rT66cS/IMG-20250505-WA0036.jpg",
-    units: {"100ml":120, "200ml":220}
-  },
-  { id:4, name:"Tazgi", brand:"oeba", category:"Majoon", img:"https://i.ibb.co/pBmM1hNh/IMG-20250505-WA0034.jpg",
-    units: {"125g":220}
-  },
-  { id:5, name:"Navjivan Arq", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/7d4GjS6v/IMG-20250505-WA0035.jpg",
-    units: {"100ml":130, "200ml":240}
-  },
-  { id:19, name:"Masiha", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/RkC4Ws41/MASIHA.png",
-    units: {"100ml":89, "200ml":171, "500ml":418}
-  },
-  { id:21, name:"Dehlvi Product", brand:"dehlvi", category:"Syrup", img:"https://i.imghippo.com/files/HnjF6152Ydk.jpg",
-    units: {"100ml":150, "200ml":270}
-  },
-  { id:20, name:"Shabab-e-Azam", brand:"others", category:"Majun", img:"https://i.ibb.co/6c9j8gcX/IMG-20250505-WA0010.jpg",
-    units: {"150g":550}
-  }
-  // add more...
+  { id:1, name:"Ajwah", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/0RsmfmR0/IMG-20250505-WA0039.jpg", units: {"100ml":120,"200ml":220,"500ml":500}, rating:4.5 },
+  { id:2, name:"Nizami Marham", brand:"oeba", category:"Ointment", img:"https://i.ibb.co/RTSgD5nD/IMG-20250505-WA0040.jpg", units: {"single":55}, rating:4.1 },
+  { id:3, name:"Hakimi Tel", brand:"oeba", category:"Oil", img:"https://i.ibb.co/2rT66cS/IMG-20250505-WA0036.jpg", units: {"100ml":120,"200ml":220}, rating:4.2 },
+  { id:4, name:"Tazgi", brand:"oeba", category:"Majoon", img:"https://i.ibb.co/pBmM1hNh/IMG-20250505-WA0034.jpg", units: {"125g":220}, rating:4.0 },
+  { id:5, name:"Navjivan Arq", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/7d4GjS6v/IMG-20250505-WA0035.jpg", units: {"100ml":130,"200ml":240}, rating:4.6 },
+  { id:6, name:"Himkar Tel", brand:"oeba", category:"Oil", img:"https://i.ibb.co/PZ4B0w45/IMG-20250505-WA0032.jpg", units: {"200ml":130}, rating:3.9 },
+  { id:7, name:"Oziya Powder", brand:"oeba", category:"Powder", img:"https://i.ibb.co/DHDRccv8/IMG-20250505-WA0033.jpg", units: {"100g":150}, rating:4.3 },
+  { id:8, name:"Pyame Sehat", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/Q7wHtFX9/IMG-20250505-WA0031.jpg", units: {"100ml":150}, rating:4.4 },
+  { id:9, name:"Shifalo tablet", brand:"oeba", category:"Tablet", img:"https://i.ibb.co/1GhLpHky/IMG-20250505-WA0029.jpg", units: {"10x10":350}, rating:4.1 },
+  { id:10, name:"Nizam Afza", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/ks3bC0cS/IMG-20250505-WA0026.jpg", units: {"100ml":90}, rating:3.8 },
+  { id:11, name:"Genric Syrup", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/20yRrYBv/IMG-20250505-WA0027.jpg", units: {"200ml":140}, rating:3.7 },
+  { id:12, name:"Habbe Musaffikhoon", brand:"oeba", category:"Tablet", img:"https://i.ibb.co/Df0WR0n3/IMG-20250505-WA0028.jpg", units: {"20x10":150}, rating:4.0 },
+  { id:13, name:"Quwwati Khas", brand:"oeba", category:"Majun", img:"https://i.ibb.co/671SvQ5M/IMG-20250505-WA0025.jpg", units: {"125g":280}, rating:4.7 },
+  { id:14, name:"Rahate Jigar", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/W4BTMFGW/IMG-20250505-WA0024.jpg", units: {"200ml":130}, rating:4.0 },
+  { id:15, name:"Oeba Joshanda", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/6MJqpST/IMG-20250505-WA0022.jpg", units: {"10":350}, rating:4.2 },
+  { id:16, name:"Majun Suranjan", brand:"oeba", category:"Majun", img:"https://i.ibb.co/HLpZQ018/IMG-20250505-WA0019.jpg", units: {"125g":150}, rating:3.9 },
+  { id:17, name:"Habbe Suranjan", brand:"oeba", category:"Tablet", img:"https://i.ibb.co/nMh04nYF/IMG-20250505-WA0017.jpg", units: {"20x10":150}, rating:4.1 },
+  { id:18, name:"Enza Tablet", brand:"oeba", category:"Tablet", img:"https://i.ibb.co/xtTZSm8Z/IMG-20250505-WA0018.jpg", units: {"10x10":250}, rating:4.0 },
+  { id:19, name:"Masiha", brand:"oeba", category:"Syrup", img:"https://i.ibb.co/RkC4Ws41/MASIHA.png", units: {"100ml":89,"200ml":171,"500ml":418}, rating:4.5 },
+  { id:20, name:"Shabab-e-Azam", brand:"others", category:"Majun", img:"https://i.ibb.co/6c9j8gcX/IMG-20250505-WA0010.jpg", units: {"150g":550}, rating:4.2 },
+  { id:21, name:"Dehlvi Product", brand:"dehlvi", category:"Syrup", img:"https://i.imghippo.com/files/HnjF6152Ydk.jpg", units: {"100ml":150,"200ml":270}, rating:4.0 },
+  { id:22, name:"Baidyanath Product", brand:"baidyanath", category:"Tablet", img:"https://i.imghippo.com/files/Vw1434AQU.jpg", units: {"10":120}, rating:3.8 }
 ];
-  /* ---------- STATE ---------- */
+
+/* ---------- STATE ---------- */
 let cart = []; // entries: { id, unit, price, qty }
 const grid = document.getElementById('productsGrid');
 const catDiv = document.getElementById('categories');
 const searchInput = document.getElementById('search');
 const noResults = document.getElementById('noResults');
+
 const bottomBanner = document.getElementById('bottomBanner');
-const cartCountEl = document.getElementById('cartCount');
+const cartCountEl = document.getElementById('cartCountBottom');
 const cartItemsText = document.getElementById('cartItemsText');
 const cartTotalText = document.getElementById('cartTotalText');
 const cartTopCount = document.getElementById('cartTopCount');
+
+const cartPanel = document.getElementById('cartPanel');
+const cartItemsWrap = document.getElementById('cartItems');
+const cartSubtotalText = document.getElementById('cartSubtotalText');
+const cartShippingText = document.getElementById('cartShippingText');
+
+const modalWrap = document.getElementById('modalWrap');
+const lightbox = document.getElementById('lightbox');
 
 /* ---------- DUPLICATE BRAND LOGOS FOR SMOOTH SLIDE ---------- */
 (function duplicateLogos(){
@@ -264,29 +357,24 @@ const cartTopCount = document.getElementById('cartTopCount');
   if(track) track.innerHTML += track.innerHTML;
 })();
 
-/* ---------- CATEGORIES ---------- */
+/* ---------- INIT filter lists ---------- */
+const brands = ["All", ...new Set(PRODUCTS.map(p=>p.brand))];
 const categories = ["All", ...new Set(PRODUCTS.map(p=>p.category))];
-function renderCategories(){
-  catDiv.innerHTML="";
-  categories.forEach(cat=>{
-    const b = document.createElement('button');
-    b.textContent = cat;
-    if(cat==="All") b.classList.add('active');
-    b.onclick = ()=> {
-      document.querySelectorAll('#categories button').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      renderProducts(cat, searchInput.value);
-    };
-    catDiv.appendChild(b);
-  });
-}
 
-/* ---------- RENDER PRODUCTS ---------- */
-function renderProducts(category="All", search=""){
+const filterBrandSel = document.getElementById('filterBrand');
+const filterCategorySel = document.getElementById('filterCategory');
+
+brands.forEach(b=> filterBrandSel.append(new Option(b, b==='All' ? '' : b)));
+categories.forEach(c=> filterCategorySel.append(new Option(c, c==='All' ? '' : c)));
+
+/* ---------- RENDER ---------- */
+function renderProducts(category="All", search="", brandFilter=""){
   grid.innerHTML="";
   search = (search||"").toLowerCase();
+
   const filtered = PRODUCTS.filter(p=>
     (category==="All"||p.category===category) &&
+    (brandFilter===""||p.brand===brandFilter) &&
     (p.name.toLowerCase().includes(search) || p.brand.toLowerCase().includes(search) || p.category.toLowerCase().includes(search))
   );
 
@@ -301,13 +389,17 @@ function renderProducts(category="All", search=""){
     const card = document.createElement('div');
     card.className = 'product';
     card.innerHTML = `
-      <div class="media"><img src="${p.img}" alt="${p.name}"></div>
+      <div class="media"><img src="${p.img}" alt="${p.name}" data-id="${p.id}"></div>
       <div class="pbody">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h4>${p.name}</h4>
           <div class="meta">${p.brand}</div>
         </div>
         <div class="meta">${p.category}</div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <div class="rating">★ ${p.rating}</div>
+        </div>
 
         <div class="unit-row">
           <select class="select-unit" data-id="${p.id}">
@@ -325,18 +417,27 @@ function renderProducts(category="All", search=""){
     `;
     grid.appendChild(card);
 
-    // listeners
+    // listeners - image enlarge
+    card.querySelector('.media img').addEventListener('click', (e)=>{
+      const src = e.currentTarget.src;
+      lightbox.querySelector('img').src = src;
+      lightbox.style.display = 'flex';
+    });
+
+    // unit change
     const select = card.querySelector('.select-unit');
     const priceVal = card.querySelector('.price-val');
-
     select.addEventListener('change', ()=>{
       const unit = select.value;
       priceVal.textContent = p.units[unit] || 0;
     });
-  card.querySelector('[data-cart]').addEventListener('click', ()=>{
+
+    // add to cart
+    card.querySelector('[data-cart]').addEventListener('click', ()=>{
       addToCart(p.id, select.value || defaultUnit);
     });
 
+    // buy now
     card.querySelector('[data-buy]').addEventListener('click', ()=>{
       openBuy(p.id, select.value || defaultUnit);
     });
@@ -350,51 +451,111 @@ function addToCart(productId, unit){
   const price = prod.units[unit] || 0;
   const existing = cart.find(i=>i.id===productId && i.unit===unit);
   if(existing) existing.qty += 1;
-  else cart.push({ id: productId, unit, price, qty: 1, name: prod.name });
+  else cart.push({ id: productId, unit, price, qty: 1, name: prod.name, img: prod.img });
   updateCartUI();
+  showToast(`${prod.name} (${unit}) added to cart`);
 }
 
 function updateCartUI(){
   const totalQty = cart.reduce((s,i)=>s+i.qty,0);
-  const totalPrice = cart.reduce((s,i)=>s + (i.price * i.qty),0);
-  cartCountEl.textContent = totalQty;
+  const subtotal = cart.reduce((s,i)=>s + (i.price * i.qty),0);
+  const shipping = (subtotal >= FREE_DELIVERY_THRESHOLD || subtotal === 0) ? 0 : SHIPPING_FEE;
+  const grand = subtotal + shipping;
+
   cartTopCount.textContent = totalQty;
+  cartCountEl.textContent = totalQty;
   cartItemsText.textContent = `${totalQty} item${totalQty!==1?'s':''}`;
-  cartTotalText.textContent = `Total ₹${totalPrice}`;
+  cartTotalText.textContent = `Total ₹${grand}`;
+  cartSubtotalText.textContent = `Subtotal: ₹${subtotal}`;
+  cartShippingText.textContent = `Shipping: ₹${shipping > 0 ? shipping : 0} ${shipping===0 && subtotal>0 ? '(Free delivery)' : ''}`;
+
+  // bottom banner
   if(totalQty>0) bottomBanner.style.display='flex'; else bottomBanner.style.display='none';
+
+  // render cart panel items
+  renderCartPanel();
+}
+
+function renderCartPanel(){
+  cartItemsWrap.innerHTML = "";
+  if(cart.length===0){ cartItemsWrap.innerHTML = "<div class='small-muted'>Cart is empty</div>"; return; }
+  cart.forEach(item=>{
+    const node = document.createElement('div');
+    node.className = 'cart-item';
+    node.innerHTML = `
+      <img src="${item.img}" alt="${item.name}">
+      <div style="flex:1">
+        <div style="font-weight:700">${item.name}</div>
+        <div class="small-muted">${item.unit} • ₹${item.price}</div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+          <div class="qty-controls">
+            <button class="dec" data-id="${item.id}" data-unit="${item.unit}">-</button>
+            <span id="qty-${item.id}-${item.unit}">${item.qty}</span>
+            <button class="inc" data-id="${item.id}" data-unit="${item.unit}">+</button>
+          </div>
+          <div style="margin-left:auto;font-weight:900">₹${item.price * item.qty}</div>
+        </div>
+      </div>
+    `;
+    cartItemsWrap.appendChild(node);
+  });
+  // attach qty buttons
+  cartItemsWrap.querySelectorAll('.inc').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = +b.dataset.id; const unit = b.dataset.unit;
+      const existing = cart.find(i=>i.id===id && i.unit===unit);
+      if(existing){ existing.qty+=1; updateCartUI(); }
+    });
+  });
+  cartItemsWrap.querySelectorAll('.dec').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = +b.dataset.id; const unit = b.dataset.unit;
+      const idx = cart.findIndex(i=>i.id===id && i.unit===unit);
+      if(idx>-1){
+        cart[idx].qty -=1;
+        if(cart[idx].qty<=0) cart.splice(idx,1);
+        updateCartUI();
+      }
+    });
+  });
 }
 
 /* view cart & checkout handlers */
-document.getElementById('viewCartBtn').addEventListener('click', ()=> {
-  if(cart.length===0) return alert("Cart empty");
-  const lines = cart.map(i=> `${i.name} (${i.unit}) x${i.qty} — ₹${i.price*i.qty}`).join('\n');
-  const total = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-  alert(`Cart:\n\n${lines}\n\nTotal: ₹${total}`);
+document.getElementById('openCartTop').addEventListener('click', ()=> {
+  cartPanel.style.display = cartPanel.style.display==='block' ? 'none' : 'block';
 });
-
-document.getElementById('checkoutBtn').addEventListener('click', ()=> {
+document.getElementById('viewCartBtn').addEventListener('click', ()=> {
+  cartPanel.style.display = 'block';
+});
+document.getElementById('cartCheckoutBtn').addEventListener('click', ()=> {
+  if(cart.length===0) return alert("Cart empty");
+  openBuyFromCart();
+});
+document.getElementById('checkoutBtnBottom').addEventListener('click', ()=> {
   if(cart.length===0) return alert("Cart empty");
   openBuyFromCart();
 });
 
 /* ---------- BUY FLOW (modal) ---------- */
-const modalWrap = document.getElementById('modalWrap');
-let buying = null; // {id, unit}
+let buying = null; // {id, unit, fromCart}
 function openBuy(productId, unit){
   const prod = PRODUCTS.find(x=>x.id===productId);
   if(!prod) return;
-  buying = { id: productId, unit };
+  buying = { id: productId, unit, fromCart:false };
   document.getElementById('modalProductLine').textContent = `${prod.name} — ${unit} — ₹${prod.units[unit]}`;
   document.getElementById('modalTitle').textContent = 'Buy Now';
   modalWrap.style.display = 'block';
+  // hide qr until selected online
+  document.getElementById('qrWrap').style.display = 'none';
   window.scrollTo(0,0);
 }
 function openBuyFromCart(){
-  const total = cart.reduce((s,i)=>s + i.price*i.qty,0);
-  document.getElementById('modalTitle').textContent = 'Checkout';
-  document.getElementById('modalProductLine').textContent = `Cart — ${cart.reduce((s,i)=>s+i.qty,0)} item(s) — ₹${total}`;
   buying = { fromCart: true };
+  const subtotal = cart.reduce((s,i)=>s + i.price*i.qty,0);
+  document.getElementById('modalProductLine').textContent = `Cart — ${cart.reduce((s,i)=>s+i.qty,0)} item(s) — ₹${subtotal}`;
+  document.getElementById('modalTitle').textContent = 'Checkout';
   modalWrap.style.display = 'block';
+  document.getElementById('qrWrap').style.display = 'none';
 }
 
 /* modal buttons */
@@ -405,7 +566,20 @@ document.getElementById('modalPlace').addEventListener('click', ()=> {
   placeOrder();
 });
 
-/* ---------- PLACE ORDER -> WhatsApp ---------- */
+/* show/hide QR when Online selected */
+document.querySelectorAll('input[name="pay"]').forEach(r=>{
+  r.addEventListener('change', ()=>{
+    if(r.value === 'Online' && r.checked){
+      document.getElementById('qrWrap').style.display = 'block';
+      // set a sample QR (user said they will provide QR) - placeholder
+      document.getElementById('qrImage').src = 'https://i.ibb.co/fz4GbyT0/Account-QRCode-Union-Bank-Of-India-5958-LIGHT-THEME.png';
+    } else if(r.checked){
+      document.getElementById('qrWrap').style.display = 'none';
+    }
+  });
+});
+
+/* ---------- PLACE ORDER -> WhatsApp (with shipping calc) ---------- */
 function placeOrder(){
   const name = document.getElementById('buyerName').value.trim();
   const phone = document.getElementById('buyerPhone').value.trim();
@@ -421,16 +595,25 @@ function placeOrder(){
   let msg = `🛒 NEW ORDER%0AStore: Hakimi Dawakhana%0A`;
 
   if(buying && buying.fromCart){
+    if(cart.length===0) return alert("Cart empty");
     cart.forEach(item=>{
       msg += `%0A• ${item.name} (${item.unit}) x${item.qty} — ₹${item.price*item.qty}`;
     });
-    const total = cart.reduce((s,i)=>s + i.price*i.qty,0);
-    msg += `%0A%0ATotal: ₹${total}`;
+    const subtotal = cart.reduce((s,i)=>s + i.price*i.qty,0);
+    const shipping = (subtotal >= FREE_DELIVERY_THRESHOLD || subtotal === 0) ? 0 : SHIPPING_FEE;
+    const grand = subtotal + shipping;
+    msg += `%0A%0ASubtotal: ₹${subtotal}`;
+    msg += `%0AShipping: ₹${shipping}`;
+    msg += `%0A%0ATotal: ₹${grand}`;
   } else if(buying){
     const prod = PRODUCTS.find(x=>x.id===buying.id);
     const price = prod.units[buying.unit] || 0;
+    const singleShipping = (price >= FREE_DELIVERY_THRESHOLD) ? 0 : SHIPPING_FEE;
+    const totalSingle = price + singleShipping;
     msg += `%0A• ${prod.name} (${buying.unit}) x1 — ₹${price}`;
-    msg += `%0A%0ATotal: ₹${price}`;
+    msg += `%0A%0ASubtotal: ₹${price}`;
+    msg += `%0AShipping: ₹${singleShipping}`;
+    msg += `%0A%0ATotal: ₹${totalSingle}`;
   } else {
     return alert("No product selected.");
   }
@@ -438,78 +621,92 @@ function placeOrder(){
   msg += `%0A%0ACustomer:%0AName: ${name || '-'}%0APhone: ${phone || '-'}%0APIN: ${pin}%0AAddress: ${address}%0ALandmark: ${landmark || '-'}%0A`;
   msg += `%0APayment: ${pay}%0A%0A-- Sent from website`;
 
-  const wa = `https://wa.me/${STORE_WA}?text=${encodeURIComponent(decodeURIComponent(msg))}`;
+  const wa = `https://wa.me/${ORDER_WA}?text=${encodeURIComponent(decodeURIComponent(msg))}`;
   window.open(wa, '_blank');
 
+  // if from cart, clear cart
   if(buying && buying.fromCart) cart = [];
   updateCartUI();
   modalWrap.style.display = 'none';
 }
 
-/* ---------- SEARCH ---------- */
-searchInput.addEventListener('input', ()=> {
-  const activeCat = document.querySelector('#categories button.active')?.textContent || 'All';
-  renderProducts(activeCat, searchInput.value);
+/* ---------- HELP CENTRE behavior ---------- */
+const helpCentre = document.getElementById('helpCentre');
+document.getElementById('helpBtn').addEventListener('click', ()=>{
+  helpCentre.classList.toggle('show');
 });
-  /* ---------- BRAND FILTER (when logo clicked) ---------- */
-function filterBrand(brand){
-  document.querySelectorAll('#categories button').forEach(x=>x.classList.remove('active'));
-  grid.innerHTML = '';
-  const filtered = PRODUCTS.filter(p=>p.brand && p.brand.toLowerCase()===brand.toLowerCase());
-  if(filtered.length===0){ noResults.style.display='block'; return; }
-  noResults.style.display='none';
-  filtered.forEach(p=>{
-    // small reuse of render for each product (same markup as renderProducts)
-    const units = Object.keys(p.units || {});
-    const defaultUnit = units[0] || "";
-    const defaultPrice = p.units[defaultUnit] || 0;
-    const card = document.createElement('div');
-    card.className = 'product';
-    card.innerHTML = `
-      <div class="media"><img src="${p.img}" alt="${p.name}"></div>
-      <div class="pbody">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <h4>${p.name}</h4>
-          <div class="meta">${p.brand}</div>
-        </div>
-        <div class="meta">${p.category}</div>
+document.getElementById('helpEnquiry').addEventListener('click', (e)=>{
+  e.preventDefault();
+  // open an options prompt (enquiry or call)
+  const url = `https://wa.me/${ENQUIRY_WA}`;
+  window.open(url,'_blank');
+});
+document.getElementById('helpDoctor').addEventListener('click', (e)=>{
+  e.preventDefault();
+  window.open(`https://wa.me/${DOCTOR_WA}`,'_blank');
+});
 
-        <div class="unit-row">
-          <select class="select-unit" data-id="${p.id}">
-            ${units.map(u=>`<option value="${u}">${u}</option>`).join('')}
-          </select>
-          <div style="margin-left:auto;font-weight:900" class="price">₹<span class="price-val">${defaultPrice}</span></div>
-        </div>
+/* ---------- LIGHTBOX ---------- */
+lightbox.addEventListener('click', ()=> lightbox.style.display='none');
 
-        <div class="actions">
-          <button class="btn btn-buy" data-buy="${p.id}">Buy Now</button>
-          <button class="btn btn-cart" data-cart="${p.id}">Add to Cart</button>
-          <div class="id-small">ID: ${p.id}</div>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-    const select = card.querySelector('.select-unit');
-    const priceVal = card.querySelector('.price-val');
-    select.addEventListener('change', ()=> priceVal.textContent = p.units[select.value] || 0);
-    card.querySelector('[data-cart]').addEventListener('click', ()=> addToCart(p.id, select.value || defaultUnit));
-    card.querySelector('[data-buy]').addEventListener('click', ()=> openBuy(p.id, select.value || defaultUnit));
+/* ---------- SEARCH / FILTERS ---------- */
+searchInput.addEventListener('input', ()=> {
+  const cat = document.querySelector('#categories button.active')?.textContent || 'All';
+  renderProducts(cat, searchInput.value, filterBrandSel.value);
+});
+filterBrandSel.addEventListener('change', ()=> {
+  const cat = document.querySelector('#categories button.active')?.textContent || 'All';
+  renderProducts(cat, searchInput.value, filterBrandSel.value);
+});
+filterCategorySel.addEventListener('change', ()=> {
+  const cat = filterCategorySel.value || 'All';
+  renderProducts(cat, searchInput.value, filterBrandSel.value);
+});
+
+/* ---------- POPULATE CATEGORIES (top chips) ---------- */
+function renderCategoriesChips(){
+  catDiv.innerHTML = "";
+  const cats = ["All", ...new Set(PRODUCTS.map(p => p.category))];
+  cats.forEach(cat=>{
+    const b = document.createElement('button');
+    b.textContent = cat;
+    if(cat==="All") b.classList.add('active');
+    b.onclick = ()=>{
+      document.querySelectorAll('#categories button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      renderProducts(cat, searchInput.value, filterBrandSel.value);
+    };
+    catDiv.appendChild(b);
   });
 }
 
-/* ---------- INITIAL ---------- */
-renderCategories();
+/* ---------- SMALL TOAST ---------- */
+function showToast(txt){
+  const t = document.createElement('div');
+  t.textContent = txt;
+  Object.assign(t.style,{position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'180px',background:'#111',color:'#fff',padding:'8px 12px',borderRadius:'8px',zIndex:9999});
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity=0; setTimeout(()=>t.remove(),400); },1500);
+}
+
+/* ---------- BRAND CLICK FILTER (slider) ---------- */
+document.querySelectorAll('.brand-track img').forEach(img=>{
+  img.addEventListener('click', ()=> {
+    const b = img.dataset.brand;
+    filterBrandSel.value = b;
+    renderProducts('All', searchInput.value, b);
+  });
+});
+
+/* ---------- INITIALIZE ---------- */
+document.getElementById('freeThresholdText').textContent = FREE_DELIVERY_THRESHOLD;
+renderCategoriesChips();
 renderProducts();
 updateCartUI();
 
-/* ---------- top add-to-cart button open cart action ---------- */
-document.getElementById('openCartTop').addEventListener('click', ()=> {
-  if(cart.length===0) return alert("Cart empty");
-  const lines = cart.map(i=> `${i.name} (${i.unit}) x${i.qty} — ₹${i.price*i.qty}`).join('\n');
-  const total = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-  if(confirm(`Cart:\n\n${lines}\n\nTotal: ₹${total}\n\nProceed to checkout?`)){
-    openBuyFromCart();
-  }
+/* ---------- small keyboard shortcuts for testing (optional) ---------- */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'c'){ cartPanel.style.display = cartPanel.style.display==='block' ? 'none' : 'block'; }
 });
 </script>
 </body>
