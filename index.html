@@ -111,7 +111,12 @@
 
   /* responsive */
   @media(max-width:980px){
-    .products-grid{grid-template-columns:repeat(2,1fr)}
+  .products-grid{
+      grid-template-columns:repeat(2,1fr) !important;
+      width: 100% !important;
+  }
+  .product { width: 100%; }
+  }
     .brand-title{font-size:22px}
     #search{width:220px}
     .brand-track img{height:48px}
