@@ -127,6 +127,32 @@
     .bottom-banner{height:120px}
     .brand-track img{height:40px}
   }
+  @media (max-width: 768px) {
+  .header-inner {
+    flex-wrap: wrap;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  #search {
+    width: 100%;
+    margin-top: 8px;
+   }
+  }
+    /* ---------- MOBILE CART FIX ---------- */
+@media (max-width: 768px) {
+  #cartPanel {
+    right: 0;
+    left: 0;
+    width: 100%;
+    top: auto;
+    bottom: 0;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0;
+  }
 </style>
 </head>
 <body>
