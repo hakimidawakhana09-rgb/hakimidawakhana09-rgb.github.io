@@ -869,6 +869,72 @@ function init(){
 }
 
 init();
+  [4:09 pm, 23/12/2025] hakimi dawakhana: <!-- FILTER PANEL -->
+<div id="filterOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;z-index:998;"></div>
+
+<div id="filterPanel" style="position:fixed;top:0;right:-320px;width:320px;height:100%;
+background:#fff;z-index:999;padding:16px;transition:0.3s;overflow:auto;">
+
+<h3>Filters</h3>
+
+<b>Brand</b><br>
+<label><input type="checkbox" class="f-brand" value="oeba"> OEBA</label><br>
+<label><input type="checkbox" class="f-brand" value="hamdard"> Hamdard</label><br><br>
+
+<b>Category</b><br>
+<label><input type="checkbox" class="f-cat" value="Syrup"> Syrup</label><br>
+<label><input type="checkbox" class="f-cat" value="Tablet"> Tablet</label><br><br>
+
+<b>Price</b><br>
+<label><input type="radio" name="price" value="0-100"> Below ₹100</label><br>
+<label><input type="radio" name="price" value="100-300"> ₹100–300</label><br><br>
+
+<button onclick="clearFilters()">Clear</button>
+<button onclick="applyFilters()">Apply</button>
+</div>
+[4:15 pm, 23/12/2025] hakimi dawakhana: // FILTER OPEN
+document.getElementById('filterBtn').onclick = function(){
+  document.getElementById('filterPanel').style.right = '0';
+  document.getElementById('filterOverlay').style.display = 'block';
+};
+
+// FILTER CLOSE
+document.getElementById('filterOverlay').onclick = function(){
+  document.getElementById('filterPanel').style.right = '-320px';
+  document.getElementById('filterOverlay').style.display = 'none';
+};
+
+function applyFilters(){
+  var brands = Array.from(document.querySelectorAll('.f-brand:checked')).map(x=>x.value);
+  var cats = Array.from(document.querySelectorAll('.f-cat:checked')).map(x=>x.value);
+  var price = document.querySelector('input[name="price"]:checked');
+
+  document.querySelectorAll('.product').forEach(function(card){
+    var name = card.querySelector('.product-title')?.innerText;
+    var p = PRODUCTS.find(x=>x.name===name);
+    if(!p) return;
+
+    var show = true;
+    if(brands.length && !brands.includes(p.brand)) show=false;
+    if(cats.length && !cats.includes(p.category)) show=false;
+
+    if(price){
+      var min = Math.min(...Object.values(p.units||{}));
+      if(price.value==="0-100" && min>100) show=false;
+      if(price.value==="100-300" && (min<100||min>300)) show=false;
+    }
+
+    card.style.display = show ? "" : "none";
+  });
+
+  document.getElementById('filterPanel').style.right = '-320px';
+  document.getElementById('filterOverlay').style.display = 'none';
+}
+
+function clearFilters(){
+  document.querySelectorAll('#filterPanel input').forEach(i=>i.checked=false);
+  document.querySelectorAll('.product').forEach(p=>p.style.display="");
+}
 </script>
 </body>
 </html>
