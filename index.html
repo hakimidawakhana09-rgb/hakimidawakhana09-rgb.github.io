@@ -131,7 +131,14 @@
   .header-inner {
     flex-wrap: wrap;
   }
-
+.btn-filter{
+  background:#fff;
+  border:1px solid #e6e9ef;
+  padding:8px 14px;
+  border-radius:8px;
+  font-weight:800;
+  cursor:pointer;
+}
   .controls {
     width: 100%;
     justify-content: space-between;
@@ -169,6 +176,7 @@
 
       <div class="controls">
         <button id="openCartTop" class="btn-cart-top">🛒 Cart (<span id="cartTopCount">0</span>)</button>
+        <button id="filterBtn" class="btn-filter">☰ Filter</button>
         <input id="search" type="search" placeholder="Search products, e.g. Oil, Syrup..." />
         <button id="openLogin" class="btn-login">Login</button>
       </div>
