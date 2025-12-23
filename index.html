@@ -354,7 +354,29 @@
       </div>
     </div>
   </footer>
+<!-- FILTER PANEL -->
+<div id="filterOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;z-index:998;"></div>
 
+<div id="filterPanel" style="position:fixed;top:0;right:-320px;width:320px;height:100%;
+background:#fff;z-index:999;padding:16px;transition:0.3s;overflow:auto;">
+
+<h3>Filters</h3>
+
+<b>Brand</b><br>
+<label><input type="checkbox" class="f-brand" value="oeba"> OEBA</label><br>
+<label><input type="checkbox" class="f-brand" value="hamdard"> Hamdard</label><br><br>
+
+<b>Category</b><br>
+<label><input type="checkbox" class="f-cat" value="Syrup"> Syrup</label><br>
+<label><input type="checkbox" class="f-cat" value="Tablet"> Tablet</label><br><br>
+
+<b>Price</b><br>
+<label><input type="radio" name="price" value="0-100"> Below ₹100</label><br>
+<label><input type="radio" name="price" value="100-300"> ₹100–300</label><br><br>
+
+<button onclick="clearFilters()">Clear</button>
+<button onclick="applyFilters()">Apply</button>
+</div>
 <script>
 /* ---------- CONFIG ---------- */
 const ORDER_WA = "917398614905"; // messages go here
